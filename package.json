@@ -1,5 +1,5 @@
 {
-  "name": "sample-expressjs",
+  "name": "rti_asta",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -14,6 +14,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.17.1"
+    	"express": "^4.17.1",
+	"axios": ""
   }
 }
