@@ -17,9 +17,9 @@ app.use("/api/transactions", transactions);
 //redirect any routes from api/transactions to file routes/api/transactions
 app.use("/api/teams", teams);
 // open server on port
-app.listen(port, () => {
+/*app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
-});
+});*/
 
 
 
