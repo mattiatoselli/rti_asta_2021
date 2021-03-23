@@ -8,8 +8,8 @@ const teamsNames = ["Racing Team Italia", "Volanti ITR", "MySubito Casa", "A24",
 //list drivers
 router.get("/", async (req,res)=>{
         const drivers = await loadDriversCollection();
-        var driverArray = await drivers.find({}).toArray();
-        var closed = drivers.close();
+        var driverArray = await drivers.collection("drivers").find({}).toArray();
+        await drivers.close();
         res.status(200).send(driverArray);
 });
 
@@ -138,6 +138,6 @@ async function loadDriversCollection() {
         { useNewUrlParser: true },
         { useUnifiedTopology: true }
     );
-    return client.db("rti_db").collection("drivers");
+    return client.db("rti_db");//.collection("drivers");
 }
 module.exports = router;
