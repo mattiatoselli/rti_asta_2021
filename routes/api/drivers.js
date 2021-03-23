@@ -9,7 +9,6 @@ const teamsNames = ["Racing Team Italia", "Volanti ITR", "MySubito Casa", "A24",
 router.get("/", async (req,res)=>{
         const drivers = await loadDriversCollection();
         var driverArray = await drivers.collection("drivers").find({}).toArray();
-        await drivers.close();
         res.status(200).send(driverArray);
 });
 
@@ -134,10 +133,15 @@ router.delete("/:id", async(req,res)=>{
 });
 
 async function loadDriversCollection() {
+        try{
     const client = await mongodb.MongoClient.connect("mongodb+srv://rti_user:rti@astaRti2021.dbx5j.mongodb.net/rti_db?retryWrites=true&w=majority",
         { useNewUrlParser: true },
         { useUnifiedTopology: true }
-    );
-    return client.db("rti_db");//.collection("drivers");
+    ).command({ ping: 1 });
+        } finally {
+    // Ensures that the client will close when you finish/error
+        await client.close();
+    }
+    return client.db("rti_db").collection("drivers");
 }
 module.exports = router;
