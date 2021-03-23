@@ -8,7 +8,7 @@ const teamsNames = ["Racing Team Italia", "Volanti ITR", "MySubito Casa", "A24",
 //list drivers
 router.get("/", async (req,res)=>{
         const drivers = await loadDriversCollection();
-        var driverArray = await drivers.collection("drivers").find({}).toArray();
+        var driverArray = await drivers.find({}).toArray();
         res.status(200).send(driverArray);
 });
 
