@@ -133,12 +133,12 @@ router.delete("/:id", async(req,res)=>{
 });
 
 async function loadDriversCollection() {
-        try{
     const client = await mongodb.MongoClient.connect("mongodb+srv://rti_user:rti@astaRti2021.dbx5j.mongodb.net/rti_db?retryWrites=true&w=majority",
         { useNewUrlParser: true },
-        { useUnifiedTopology: true }
-    ).command({ ping: 1 });
-        } finally {
+        { useUnifiedTopology: true });
+    try{
+        client.db("rti_db").command({ ping: 1 });
+     } finally {
     // Ensures that the client will close when you finish/error
         await client.close();
     }
