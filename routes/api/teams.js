@@ -34,5 +34,5 @@ router.get("/", async (req,res)=>{
         { useUnifiedTopology: true }
     );
     return client.db("rti_db").collection("teams");*/
-}
+//}
 module.exports = router;
