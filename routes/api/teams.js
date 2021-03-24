@@ -28,11 +28,11 @@ router.get("/", async (req,res)=>{
 
 
 
-async function loadTeamsCollection() {
+/*async function loadTeamsCollection() {
     const client = await mongodb.MongoClient.connect("mongodb+srv://rti_user:rti@astaRti2021.dbx5j.mongodb.net/rti_db?retryWrites=true&w=majority",
         { useNewUrlParser: true },
         { useUnifiedTopology: true }
     );
-    return client.db("rti_db").collection("teams");
+    return client.db("rti_db").collection("teams");*/
 }
 module.exports = router;
