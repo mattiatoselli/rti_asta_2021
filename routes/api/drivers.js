@@ -1,5 +1,6 @@
 const express = require("express");
 const mongodb = require("mongodb");
+const { MongoClient } = require("mongodb");
 const axios = require('axios');
 const router = express.Router();
 var ObjectId = require('mongodb').ObjectId;
@@ -7,9 +8,22 @@ const teamsNames = ["Racing Team Italia", "Volanti ITR", "MySubito Casa", "A24",
 
 //list drivers
 router.get("/", async (req,res)=>{
+        const uri = "mongodb+srv://rti_user:rti@astaRti2021.dbx5j.mongodb.net/rti_db?retryWrites=true&w=majority";
+        // Create a new MongoClient
+        const client = new MongoClient(uri);
         const drivers = await loadDriversCollection();
-        var driverArray = await drivers.find({}).toArray();
-        res.status(200).send(driverArray);
+        try {
+                // Connect the client to the server
+                await client.connect();
+                // Establish and verify connection
+                const drivers = await client.db("rti_db").collection("drivers");
+                res.status(200).send(await drivers.find({}).toArray());
+        } finally {
+                // Ensures that the client will close when you finish/error
+                await client.close();
+        }
+        //var driverArray = await drivers.find({}).toArray();
+        //res.status(200).send(driverArray);
 });
 
 //select all drivers currently on sale
