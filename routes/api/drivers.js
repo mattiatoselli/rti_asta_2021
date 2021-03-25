@@ -8,31 +8,31 @@ const teamsNames = ["Racing Team Italia", "Volanti ITR", "MySubito Casa", "A24",
 
 //list drivers
 router.get("/", async (req,res)=>{
-        const uri = "mongodb+srv://rti_user:rti@astaRti2021.dbx5j.mongodb.net/rti_db?retryWrites=true&w=majority";
-        // Create a new MongoClient
-        const client = new MongoClient(uri);
-        const drivers = await loadDriversCollection();
-        try {
-                // Connect the client to the server
-                await client.connect();
-                // Establish and verify connection
-                const drivers = await client.db("rti_db").collection("drivers");
-                res.status(200).send(await drivers.find({}).toArray());
-        } finally {
-                // Ensures that the client will close when you finish/error
-                await client.close();
-        }
-        //var driverArray = await drivers.find({}).toArray();
-        //res.status(200).send(driverArray);
+    const uri = "mongodb+srv://rti_user:rti@astaRti2021.dbx5j.mongodb.net/rti_db?retryWrites=true&w=majority";
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        const drivers = await client.db("rti_db").collection("drivers");
+        res.status(200).send(await drivers.find({}).toArray());
+    } finally {
+        await client.close();
+    }
 });
 
 //select all drivers currently on sale
 router.get("/onsale", async (req,res)=>{
-    const drivers = await loadDriversCollection();
-    res.send(await drivers.find({isOnSale: true}).toArray());
+    const uri = "mongodb+srv://rti_user:rti@astaRti2021.dbx5j.mongodb.net/rti_db?retryWrites=true&w=majority";
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        const drivers = await loadDriversCollection();
+        res.send(await drivers.find({isOnSale: true}).toArray());
+    } finally {
+        await client.close();
+    }
 });
 
-//select drivers by team
+//select drivers by team id
 router.get("/byteam/:team", async(req,res)=>{
     if(!teamsNames.includes(req.params.team)){
         res.status(400).send({message : "This team is not available, provide a name in this list: " +teamsNames});
