@@ -32,14 +32,22 @@ router.get("/onsale", async (req,res)=>{
     }
 });
 
-//select drivers by team id
+//select drivers by team name
 router.get("/byteam/:team", async(req,res)=>{
     if(!teamsNames.includes(req.params.team)){
         res.status(400).send({message : "This team is not available, provide a name in this list: " +teamsNames});
         return null;
     }
-    const drivers = await loadDriversCollection();
-    res.send(await drivers.find({team: req.params.team}).toArray());
+    const uri = "mongodb+srv://rti_user:rti@astaRti2021.dbx5j.mongodb.net/rti_db?retryWrites=true&w=majority";
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        const drivers =  await client.db("rti_db").collection("drivers");
+        res.send(await drivers.find({team: req.params.team}).toArray());
+    }
+    finally {
+        await client.close();
+    }
 });
 
 //select single driver by his id
