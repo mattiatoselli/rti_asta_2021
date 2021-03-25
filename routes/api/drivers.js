@@ -63,48 +63,51 @@ router.get("/:id", async (req,res)=>{
 
 //create driver
 router.post("/", async(req, res)=>{
+    //let us validate the request, if wrong return bad request status
+    //with a suitable error parameter for front end developers
+    if(req.body.name == "" || req.body.name == null || req.body.name == undefined){
+        res.status(400).send({message : "Please provide a name parameter for the driver"});
+        return null;
+    }
+    if(req.body.team == null || req.body.team == "" || req.body.team == undefined){
+        res.status(400).send({message : "Please provide a team parameter for the driver"});
+        return null;
+    } 
+    if(!teamsNames.includes(req.body.team)){
+        res.status(400).send({message : "This team is not available, provide a name in this list: " +teamsNames});
+        return null;
+    }
+    if(req.body.price === null || req.body.price === "" || req.body.price === undefined){
+        res.status(400).send({message : "Provide a base price for the driver, if he is not on sale, set 0 as price parameter."});
+        return null;
+    }
+    if(req.body.price < 0){
+        res.status(400).send({message : "Provide a price over or equal to 0 credits for a driver"});
+        return null;
+    } 
+    if(req.body.price === 0 && req.body.isOnSale){
+        res.status(400).send({message : "Drivers on sale cannot be for free."});
+        return null;
+    }
+    if(req.body.price > 0 && !req.body.isOnSale){
+        res.status(400).send({message : "If a driver has a price he must be on sale."});
+        return null;
+    }
+    //parameters validated
+    //get connection now
+    //now the last check for the database integrity: does this driver already exists? should be unique.
+    const uri = "mongodb+srv://rti_user:rti@astaRti2021.dbx5j.mongodb.net/rti_db?retryWrites=true&w=majority";
+    const client = new MongoClient(uri);
     try {
-        //let us validate the request, if wrong return bad request status
-        //with a suitable error parameter for front end developers
-        if(req.body.name == "" || req.body.name == null || req.body.name == undefined){
-            res.status(400).send({message : "Please provide a name parameter for the driver"});
-            return null;
-        }
-        if(req.body.team == null || req.body.team == "" || req.body.team == undefined){
-            res.status(400).send({message : "Please provide a team parameter for the driver"});
-            return null;
-        } 
-        if(!teamsNames.includes(req.body.team)){
-            res.status(400).send({message : "This team is not available, provide a name in this list: " +teamsNames});
-            return null;
-        }
-        if(req.body.price === null || req.body.price === "" || req.body.price === undefined){
-            res.status(400).send({message : "Provide a base price for the driver, if he is not on sale, set 0 as price parameter."});
-            return null;
-        }
-        if(req.body.price < 0){
-            res.status(400).send({message : "Provide a price over or equal to 0 credits for a driver"});
-            return null;
-        } 
-        if(req.body.price === 0 && req.body.isOnSale){
-            res.status(400).send({message : "Drivers on sale cannot be for free."});
-            return null;
-        }
-        if(req.body.price > 0 && !req.body.isOnSale){
-            res.status(400).send({message : "If a driver has a price he must be on sale."});
-            return null;
-        }
-        //parameters validated
-        //now the last check for the database integrity: does this driver already exists? should be unique.
-        const drivers = await loadDriversCollection();
+        await client.connect();
+        const drivers =  await client.db("rti_db").collection("drivers");
         //find driver by provided name
         var selectedDriver = await drivers.findOne({name: req.body.name});
-        //if he exists then return a bad request status stating that the driver should be unique
-        //otherwise keep going with the db operations
         if(selectedDriver !== null){
             res.status(400).send({message : "Driver name is already taken. Must be unique."});
             return null;
         }
+        //unique, well, keep going with the db operations
         await drivers.insertOne({
             name : req.body.name,
             team: req.body.team,
@@ -112,8 +115,8 @@ router.post("/", async(req, res)=>{
             isOnSale : req.body.isOnSale
         });
         res.status(201).send();
-    } catch(err) {
-        res.status(500).send({message : err.message});
+    } finally {
+        await client.close();
     }
 });
 
