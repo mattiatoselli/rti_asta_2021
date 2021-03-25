@@ -25,7 +25,7 @@ router.get("/onsale", async (req,res)=>{
     const client = new MongoClient(uri);
     try {
         await client.connect();
-        const drivers = await loadDriversCollection();
+        const drivers =  await client.db("rti_db").collection("drivers");
         res.send(await drivers.find({isOnSale: true}).toArray());
     } finally {
         await client.close();
