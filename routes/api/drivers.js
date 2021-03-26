@@ -58,6 +58,10 @@ router.get("/:id", async (req,res)=>{
         await client.connect();
         const drivers =  await client.db("rti_db").collection("drivers");
         var selectedDriver = await drivers.findOne({_id:ObjectId(req.params.id)});
+        if(selectedDriver.length == 0 ) {
+            res.status(404);
+            return null;
+        }
         res.status(200).send(selectedDriver);
     } catch(err) {
         res.status(500).send({error : err.message});

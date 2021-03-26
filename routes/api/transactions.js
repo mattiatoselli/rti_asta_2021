@@ -4,6 +4,101 @@ const axios = require('axios')
 const router = express.Router();
 var ObjectId = require('mongodb').ObjectId;
 
+//create transaction and transfer driver
+router.post("/", async(req,res)=> {
+    //validate request params
+    /*===================================================
+    * payload must contain driverId, newTeam, price
+    *====================================================
+    */
+    if(req.body.driver == null || req.body.driver == "" || req.body.driver == undefined){
+        res.status(400).send({message : "Please provide a driver"});
+        return null;
+    }
+    if(req.body.price == null || req.body.price == "" || req.body.price == undefined){
+        res.status(400).send({message : "Please provide a price of transaction"});
+        return null;
+    }
+    //get connection to collections
+    const uri = "mongodb+srv://rti_user:rti@astaRti2021.dbx5j.mongodb.net/rti_db?retryWrites=true&w=majority";
+    const client = new MongoClient(uri);
+    try{
+        const drivers =  await client.db("rti_db").collection("drivers");
+        const teams = await client.db("rti_db").collection("teams");
+        const transactions = await client.db("rti_db").collection("transactions");
+
+        //========== the actual function =====================
+        var selectedDriver = await drivers.findOne({_id:ObjectId(req.params.driverId)});
+        if(selectedDriver.length == 0 ) {
+            res.status(404);
+            return null;
+        }
+        if(selectedDriver.isOnSale == false) {
+            res.status(404).send({message: "driver is not on sale"});
+            return null;
+        }
+        if(selectedDriver.price > req.body.price) {
+            res.status(400).send({message: "Cannot buy driver lower than base price"});
+            return null;
+        }
+
+        //get team infos
+        var payingTeam = await teams.find({name: req.body.newTeam});
+        var sellingTeam = await teams.find({name: selectedDriver.team});
+
+        //team provided as new exists?
+        if(payingTeam.length == 0) {
+            res.status(404).send({message: "this team does not exist"});
+            return null;
+        }
+
+        //new team has the money? :P
+        if(payingTeam.credits < req.body.price) {
+            res.status(403).send({message: "this team has not the credits' amount necessary"});
+            return null;
+        }
+
+        //ok now the team pays.
+        payingTeam.credits = payingTeam.credits - req.body.price;
+        //the selling teams gets the money, if the transfer is beetween two teams, they get half, 0 otherwise:
+        if(sellingTeam.name != payingTeam.name){
+            sellingTeam.credits = sellingTeam.credits + (req.body.price/2);
+        } else {
+            //do nothing you lose all the money bro
+        }
+
+        //transfer driver and put him out of market
+        selectedDriver.team = payingTeam.name;
+        selectedDriver.formerPrice = selectedDriver.price;
+        selectedDriver.price = 0;
+        selectedDriver.isOnSale = false;
+
+        //create transaction history
+        var newTransaction = {
+            driverName : selectedDriver.name,
+            price : req.body.price,
+            formerTeam : sellingTeam.name,
+            newTeam : payingTeam.name 
+        };
+
+        //flush the database
+        res.status(201).send({
+            message : "Driver " + newTransaction.driverName + "goes to " + newTransaction.formerTeam + "from " + newTransaction.formerTeam + "for " + newTransaction.price
+        })
+
+
+
+    } finally {
+        await client.close();
+    }
+
+})
+
+
+
+
+
+/*
 //list all transactions ordered by time from most recent to less
 router.get("/", async (req, res) => {
     try {
@@ -95,5 +190,5 @@ async function loadTransactionsCollection() {
     );
     return client.db("racing_team_italia").collection("transactions");
 }
-
+*/
 module.exports = router;
