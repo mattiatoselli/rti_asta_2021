@@ -44,6 +44,7 @@ router.post("/", async(req,res)=> {
 
         //========== the actual function =====================
         var selectedDriver = await drivers.findOne({_id:ObjectId(req.body.driver)});
+        console.log(selectedDriver);
         if(selectedDriver.length == undefined || selectedDriver.length == 0 ) {
             res.status(404);
             return null;
@@ -59,7 +60,9 @@ router.post("/", async(req,res)=> {
 
         //get team infos
         var payingTeam = await teams.find({name: req.body.newTeam});
+        console.log(payingTeam);
         var sellingTeam = await teams.find({name: selectedDriver.team});
+        selectedDriver(sellingTeam);
 
         //team provided as new exists?
         if(payingTeam.length == 0) {
