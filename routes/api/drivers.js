@@ -43,7 +43,7 @@ router.get("/byteam/:team", async(req,res)=>{
     try {
         await client.connect();
         const drivers =  await client.db("rti_db").collection("drivers");
-        res.send(await drivers.find({team: req.params.team}).toArray());
+        res.send(await drivers.find({team: req.params.team}).sort({name: 1}).toArray());
     }
     finally {
         await client.close();
