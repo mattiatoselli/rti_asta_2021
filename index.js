@@ -3,8 +3,9 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 //instantiate express framework
-const app = express();
+var app = express();
 //middlewares
+app.use(bodyParser.json());
 app.use(cors());
 //routes
 const drivers = require("./routes/api/drivers");
