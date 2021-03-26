@@ -34,7 +34,7 @@ router.post("/", async(req,res)=> {
         const transactions = await client.db("rti_db").collection("transactions");
 
         //========== the actual function =====================
-        var selectedDriver = await drivers.findOne({_id:ObjectId(req.params.driverId)});
+        var selectedDriver = await drivers.findOne({_id:ObjectId(req.body.driver)});
         if(selectedDriver === null ) {
             res.status(404);
             return null;
