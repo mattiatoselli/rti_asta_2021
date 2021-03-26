@@ -24,6 +24,7 @@ router.post("/", async(req,res)=> {
     const uri = "mongodb+srv://rti_user:rti@astaRti2021.dbx5j.mongodb.net/rti_db?retryWrites=true&w=majority";
     const client = new MongoClient(uri);
     try{
+        await client.connect();
         const drivers =  await client.db("rti_db").collection("drivers");
         const teams = await client.db("rti_db").collection("teams");
         const transactions = await client.db("rti_db").collection("transactions");
