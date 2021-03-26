@@ -101,9 +101,10 @@ router.post("/", async(req,res)=> {
         };
 
         //flush the database
-        await drivers.updateOne({_id: ObjectId(selectedDriver.id)}, { $set: selectedDriver });
-        await teams.updateOne({_id: ObjectId(payingTeam.id)}, { $set: payingTeam });
-        await teams.updateOne({_id: ObjectId(sellingTeam.id)}, { $set: sellingTeam });
+        drivers.updateOne({_id: ObjectId(selectedDriver.id)}, { $set: selectedDriver });
+        teams.updateOne({_id: ObjectId(payingTeam.id)}, { $set: payingTeam });
+        teams.updateOne({_id: ObjectId(sellingTeam.id)}, { $set: sellingTeam });
+        transactions.insertOne(newTransaction);
         res.status(201).send({
             message : "Driver " + newTransaction.driverName + "goes to " + newTransaction.newTeam + " from " + newTransaction.formerTeam + "for " + newTransaction.price
         })
