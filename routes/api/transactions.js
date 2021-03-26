@@ -4,6 +4,7 @@ const axios = require('axios')
 const router = express.Router();
 var ObjectId = require('mongodb').ObjectId;
 const { MongoClient } = require("mongodb");
+const teamsNames = ["Racing Team Italia", "Volanti ITR", "MySubito Casa", "A24", "Scuderia Prandelli", "Virtual Racing", "3DRAP", "Rookies"];
 
 //create transaction and transfer driver
 router.post("/", async(req,res)=> {
@@ -21,6 +22,14 @@ router.post("/", async(req,res)=> {
             res.status(400).send({message : "Please provide a price of transaction"});
             return null;
         }
+        if(req.body.newTeam == null || req.body.newTeam == "" || req.body.newTeam == undefined){
+            res.status(400).send({message : "Please provide a new team"});
+            return null;
+        }
+        if(!teamsNames.includes(req.body.team)){
+            res.status(400).send({message : "This team is not available, provide a name in this list: " +teamsNames});
+            return null;
+        }
     } catch(err){
         res.status(500).send({message : err.message});
     }
@@ -35,7 +44,8 @@ router.post("/", async(req,res)=> {
 
         //========== the actual function =====================
         var selectedDriver = await drivers.findOne({_id:ObjectId(req.body.driver)});
-        if(selectedDriver === null ) {
+        res.send({selectedDriver});
+        if(selectedDriver.length == 0 ) {
             res.status(404);
             return null;
         }
