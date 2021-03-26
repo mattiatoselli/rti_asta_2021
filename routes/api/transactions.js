@@ -12,13 +12,17 @@ router.post("/", async(req,res)=> {
     * payload must contain driverId, newTeam, price
     *====================================================
     */
-    if(req.body.driver == null || req.body.driver == "" || req.body.driver == undefined){
-        res.status(400).send({message : "Please provide a driver"});
-        return null;
-    }
-    if(req.body.price == null || req.body.price == "" || req.body.price == undefined){
-        res.status(400).send({message : "Please provide a price of transaction"});
-        return null;
+   try{
+        if(req.body.driver == null || req.body.driver == "" || req.body.driver == undefined){
+            res.status(400).send({message : "Please provide a driver"});
+            return null;
+        }
+        if(req.body.price == null || req.body.price == "" || req.body.price == undefined){
+            res.status(400).send({message : "Please provide a price of transaction"});
+            return null;
+        }
+    } catch(err){
+        res.status(500).send({message : err.message});
     }
     //get connection to collections
     const uri = "mongodb+srv://rti_user:rti@astaRti2021.dbx5j.mongodb.net/rti_db?retryWrites=true&w=majority";
@@ -90,7 +94,10 @@ router.post("/", async(req,res)=> {
 
 
 
-    } finally {
+    }catch (err){
+        res.status(500).send({message : err.message});
+    }
+     finally {
         await client.close();
     }
 
