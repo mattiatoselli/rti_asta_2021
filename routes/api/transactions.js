@@ -103,7 +103,7 @@ router.post("/", async(req,res)=> {
 
         //flush the database
         await drivers.updateOne({_id: ObjectId(selectedDriver._id)}, { $set: selectedDriver });
-        await teams.updateOne({_id: ObjectId(payingTeam._id)}, { $set: payingTeam });
+        await teams.updateOne({_id: ObjectId(payingTeam._id)}, { $set: {credits: (payingTeam - req.body.price)} });
         await teams.updateOne({_id: ObjectId(sellingTeam._id)}, { $set: sellingTeam });
         await transactions.insertOne(newTransaction);
         res.status(201).send({
