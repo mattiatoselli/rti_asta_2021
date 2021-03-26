@@ -52,12 +52,17 @@ router.get("/byteam/:team", async(req,res)=>{
 
 //select single driver by his id
 router.get("/:id", async (req,res)=>{
+    const uri = "mongodb+srv://rti_user:rti@astaRti2021.dbx5j.mongodb.net/rti_db?retryWrites=true&w=majority";
+    const client = new MongoClient(uri);
     try {
-        const drivers = await loadDriversCollection();
+        await client.connect();
+        const drivers =  await client.db("rti_db").collection("drivers");
         var selectedDriver = await drivers.findOne({_id:ObjectId(req.params.id)});
         res.status(200).send(selectedDriver);
     } catch(err) {
         res.status(500).send({error : err.message});
+    } finally {
+        await client.close();
     }
 });
 
@@ -125,8 +130,14 @@ router.post("/", async(req, res)=>{
     }
 });
 
+
+
+
+
+
+//actually we do not need to really update some drivers params or delete them here
 //update driver actually this api only set a driver's new team and removes him from sell when the transaction is done
-router.put("/:id", async(req,res)=>{
+/*router.put("/:id", async(req,res)=>{
     try {
         const drivers = await loadDriversCollection();
         //driver validation for update, did you provided an id?
@@ -173,5 +184,5 @@ async function loadDriversCollection() {
         await client.close();
     }
     return client.db("rti_db").collection("drivers");
-}
+}*/
 module.exports = router;
