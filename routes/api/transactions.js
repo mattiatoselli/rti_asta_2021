@@ -44,19 +44,21 @@ router.post("/", async(req,res)=> {
 
         //========== the actual function =====================
         var selectedDriver = await drivers.findOne({_id:ObjectId(req.body.driver)});
-        console.log(selectedDriver);
-        if(selectedDriver.length == undefined || selectedDriver.length == 0 ) {
+        if(selectedDriver.length == 0 ) {
             res.status(404);
             return null;
         }
+        console.log("passati passato undefined");
         if(selectedDriver.isOnSale == false) {
             res.status(404).send({message: "driver is not on sale"});
             return null;
         }
+        console.log("passato isonsale");
         if(selectedDriver.price > req.body.price) {
             res.status(400).send({message: "Cannot buy driver lower than base price"});
             return null;
         }
+        console.log("passati controlli");
 
         //get team infos
         var payingTeam = await teams.find({name: req.body.newTeam});
