@@ -58,11 +58,11 @@ router.post("/", async(req,res)=> {
             res.status(400).send({message: "Cannot buy driver lower than base price"});
             return null;
         }
-        console.log("passati controlli");
+        //console.log("passati controlli");
 
         //get team infos
         var payingTeam = await teams.findOne({name: req.body.newTeam});
-        console.log(payingTeam);
+        //console.log(payingTeam);
         var sellingTeam = await teams.findOne({name: selectedDriver.team});
 
         //team provided as new exists?
@@ -78,7 +78,9 @@ router.post("/", async(req,res)=> {
         }
 
         //ok now the team pays.
+        console.log(payingTeam);
         payingTeam.credits = payingTeam.credits - req.body.price;
+        console.log(payingTeam);
         //the selling teams gets the money, if the transfer is beetween two teams, they get half, 0 otherwise:
         if(sellingTeam.name != payingTeam.name){
             sellingTeam.credits = sellingTeam.credits + (req.body.price/2);
