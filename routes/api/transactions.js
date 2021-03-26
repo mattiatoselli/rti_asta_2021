@@ -44,7 +44,7 @@ router.post("/", async(req,res)=> {
 
         //========== the actual function =====================
         var selectedDriver = await drivers.findOne({_id:ObjectId(req.body.driver)});
-        if(selectedDriver == null ) {
+        if(!selectedDriver) {
             res.status(404);
             return null;
         }
