@@ -26,7 +26,7 @@ router.post("/", async(req,res)=> {
             res.status(400).send({message : "Please provide a new team"});
             return null;
         }
-        if(!teamsNames.includes(req.body.team)){
+        if(!teamsNames.includes(req.body.newTeam)){
             res.status(400).send({message : "This team is not available, provide a name in this list: " +teamsNames});
             return null;
         }
