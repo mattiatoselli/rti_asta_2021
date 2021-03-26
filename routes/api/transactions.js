@@ -64,7 +64,6 @@ router.post("/", async(req,res)=> {
         var payingTeam = await teams.find({name: req.body.newTeam});
         console.log(payingTeam);
         var sellingTeam = await teams.find({name: selectedDriver.team});
-        selectedDriver(sellingTeam);
 
         //team provided as new exists?
         if(payingTeam.length == 0) {
