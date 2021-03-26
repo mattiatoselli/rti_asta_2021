@@ -79,6 +79,7 @@ router.post("/", async(req,res)=> {
 
         //ok now the team pays.
         payingTeam.credits = payingTeam.credits - req.body.price;
+        console.log(payingTeam);
         //the selling teams gets the money, if the transfer is beetween two teams, they get half, 0 otherwise:
         if(sellingTeam.name != payingTeam.name){
             console.log("sono in if");
@@ -86,13 +87,13 @@ router.post("/", async(req,res)=> {
         } else {
             console.log("sono in else");
         }
-
+        console.log(payingTeam);
         //transfer driver and put him out of market
         selectedDriver.team = payingTeam.name;
         selectedDriver.formerPrice = selectedDriver.price;
         selectedDriver.price = 0;
         selectedDriver.isOnSale = false;
-
+        console.log(payingTeam);
         //create transaction history
         var newTransaction = {
             driverName : selectedDriver.name,
@@ -100,10 +101,10 @@ router.post("/", async(req,res)=> {
             formerTeam : sellingTeam.name,
             newTeam : payingTeam.name 
         };
-
+        console.log(payingTeam);
         //flush the database
         await drivers.updateOne({_id: ObjectId(selectedDriver._id)}, { $set: selectedDriver });
-        await teams.updateOne({_id: ObjectId(payingTeam._id)}, { $set: {credits: (payingTeam - req.body.price)} });
+        await teams.updateOne({_id: ObjectId(payingTeam._id)}, { $set: payingTeam });
         await teams.updateOne({_id: ObjectId(sellingTeam._id)}, { $set: sellingTeam });
         await transactions.insertOne(newTransaction);
         res.status(201).send({
